@@ -28,9 +28,10 @@ void setup() {
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
 
-  // Add peer
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
+  esp_err_t result = esp_now_add_peer(&peerInfo);
+  if (result != ESP_OK) {
+    Serial.println("Could Not Find Peer! Error: ");
+    Serial.println(esp_err_to_name(result));
     return;
   }
 
@@ -56,9 +57,10 @@ void loop() {
     esp_err_t result = esp_now_send(base_station_mac_address, (uint8_t *)&request, sizeof(request));
 
     if (result == ESP_OK) {
-      Serial.println("Sent with success");
+      Serial.println("Request Sent");
     } else {
-      Serial.println("Error sending the data");
+      Serial.print("Error Sending Request! Error: ");
+      Serial.println(esp_err_to_name(result));
     }
   }
 }
