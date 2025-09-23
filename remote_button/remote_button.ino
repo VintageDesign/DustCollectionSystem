@@ -2,24 +2,13 @@
 #include <esp_wifi.h>
 #include <esp_now.h>
 
-uint8_t new_mac_address[] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
-uint8_t target_mac_address[] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
+#include "../shared/shared.h"
+
 esp_now_peer_info_t peerInfo;
 
-enum class State: uint32_t
-{
-  OFF = 0x00,
-  ON = 0x01,
-
-};
-
-typedef struct state_change_request
-{
-  State new_state;
-} state_change_request;
 
 void setup() {
-  esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, &new_mac_address[0]);
+  esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, &remote_mac_address[0]);
   if (err == ESP_OK) {
     Serial.println("Successfully changed Mac Address");
   }
@@ -34,7 +23,7 @@ void setup() {
   }
 
   // Register peer
-  memcpy(peerInfo.peer_addr, target_mac_address, 6);
+  memcpy(peerInfo.peer_addr, base_station_mac_address, 6);
   peerInfo.channel = 0;  
   peerInfo.encrypt = false;
   
@@ -61,7 +50,7 @@ void loop() {
     current_state = State::ON;
   }
 
-  esp_err_t result = esp_now_send(target_mac_address, (uint8_t *) &request, sizeof(request));
+  esp_err_t result = esp_now_send(base_station_mac_address, (uint8_t *) &request, sizeof(request));
    
   if (result == ESP_OK) {
     Serial.println("Sent with success");

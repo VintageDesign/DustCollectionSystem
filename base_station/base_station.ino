@@ -3,23 +3,13 @@
 #include <esp_wifi.h>
 #include <esp_now.h>
 
+#include "../shared/shared.h"
 
 
-uint8_t newMACAddress[] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
+
 const uint8_t RELAY_STATUS_LED = 23;
 const uint8_t RELAY_PIN = 22;
 
-enum class State: uint32_t
-{
-  OFF = 0x00,
-  ON = 0x01,
-
-};
-
-typedef struct state_change_request
-{
-  State new_state;
-} state_change_request;
 
 
 
@@ -35,7 +25,7 @@ void on_state_change_request_recv(const esp_now_recv_info* mac, const uint8_t * 
 
 
 void setup() {
- esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, &newMACAddress[0]);
+ esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, &base_station_mac_address[0]);
   if (err == ESP_OK) {
     Serial.println("Successfully changed Mac Address");
   }
