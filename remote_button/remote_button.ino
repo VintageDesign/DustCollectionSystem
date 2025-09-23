@@ -6,6 +6,7 @@
 
 esp_now_peer_info_t peerInfo;
 
+constexpr int BUTTON_PIN = 8;  // TODO Figure out the right pin later
 
 void setup() {
   esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, &remote_mac_address[0]);
@@ -24,39 +25,40 @@ void setup() {
 
   // Register peer
   memcpy(peerInfo.peer_addr, base_station_mac_address, 6);
-  peerInfo.channel = 0;  
+  peerInfo.channel = 0;
   peerInfo.encrypt = false;
-  
-  // Add peer        
-  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+
+  // Add peer
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
   }
 
+  pinMode(BUTTON_PIN, INPUT);
 }
 
 State current_state = State::OFF;
 
 void loop() {
-  state_change_request request;
-  request.new_state = current_state;
-  
-  if(current_state == State::ON)
-  {
-    current_state = State::OFF;
-  }
-  else
-  {
-    current_state = State::ON;
-  }
 
-  esp_err_t result = esp_now_send(base_station_mac_address, (uint8_t *) &request, sizeof(request));
-   
-  if (result == ESP_OK) {
-    Serial.println("Sent with success");
+  int button_state = digitalRead(BUTTON_PIN);
+
+  if (button_state) {
+    state_change_request request;
+    request.new_state = current_state;
+
+    if (current_state == State::ON) {
+      current_state = State::OFF;
+    } else {
+      current_state = State::ON;
+    }
+
+    esp_err_t result = esp_now_send(base_station_mac_address, (uint8_t *)&request, sizeof(request));
+
+    if (result == ESP_OK) {
+      Serial.println("Sent with success");
+    } else {
+      Serial.println("Error sending the data");
+    }
   }
-  else {
-    Serial.println("Error sending the data");
-  }
-  delay(2000);
 }
