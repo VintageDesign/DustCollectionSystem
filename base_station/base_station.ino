@@ -9,9 +9,7 @@
 
 const uint8_t RELAY_STATUS_LED = 23;
 const uint8_t RELAY_PIN = 22;
-
-
-
+const uint8_t CONNECTION_STATUS_PIN = 2;
 
 State current_state = State::OFF;
 
@@ -41,6 +39,9 @@ void setup() {
 
   pinMode(RELAY_STATUS_LED, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
+  pinMode(CONNECTION_STATUS_PIN, OUTPUT);
+
+  digitalWrite(CONNECTION_STATUS_PIN, HIGH);
   
   esp_now_register_recv_cb(on_state_change_request_recv);
 }
