@@ -8,9 +8,9 @@
 
 
 constexpr int BUTTON_PIN = 12;
-const uint8_t RELAY_STATUS_LED = 23;
+const uint8_t RELAY_STATUS_LED = 2;
 const uint8_t RELAY_PIN = 22;
-const uint8_t CONNECTION_STATUS_PIN = 2;
+const uint8_t CONNECTION_STATUS_PIN = 23;
 
 State current_state = State::OFF;
 
@@ -55,6 +55,7 @@ void setup() {
   pinMode(RELAY_STATUS_LED, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(CONNECTION_STATUS_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
 
   digitalWrite(CONNECTION_STATUS_PIN, HIGH);
   
