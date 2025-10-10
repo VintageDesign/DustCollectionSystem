@@ -7,6 +7,7 @@
 
 
 
+constexpr int BUTTON_PIN = 12;
 const uint8_t RELAY_STATUS_LED = 23;
 const uint8_t RELAY_PIN = 22;
 const uint8_t CONNECTION_STATUS_PIN = 2;
@@ -18,7 +19,21 @@ void on_state_change_request_recv(const esp_now_recv_info* mac, const uint8_t * 
   state_change_request serialized_data;
   memcpy(&serialized_data, data, sizeof(data));
 
-  current_state = serialized_data.new_state;
+  if (serialized_data.new_state == State::TOGGLE)
+  {
+    if (current_state == State::ON)
+    {
+      current_state = State::OFF;
+    }
+    else
+    {
+      current_state = State::ON;
+    }
+  }
+  else
+  {
+    current_state = serialized_data.new_state;
+  }
 }
 
 
@@ -46,8 +61,45 @@ void setup() {
   esp_now_register_recv_cb(on_state_change_request_recv);
 }
 
+int last_button_state = 0;
+int button_state = 0;
+uint32_t debounce_time = 0;
+constexpr uint32_t DEBOUNCE_DELAY = 100;
+
 void loop() {
-  
+  int button_reading = digitalRead(BUTTON_PIN);
+
+  if (button_reading != last_button_state)
+  {
+    debounce_time = millis();
+  }
+
+  if ((millis() - debounce_time) > DEBOUNCE_DELAY)
+  {
+    // whatever the reading is at, it's been there for longer than the debounce
+    // delay, so take it as the actual current state:
+
+    // if the button state has changed:
+    if (button_state != button_reading)
+    {
+      button_state = button_reading;
+
+      // only toggle the LED if the new button state is HIGH
+      if (button_state == HIGH)
+      {
+        if (current_state == State::ON)
+        {
+          current_state = State::OFF;
+        }
+        else
+        {
+          current_state = State::ON;
+        }
+      }
+    }
+  }
+  last_button_state = button_reading;
+
   if(current_state == State::ON)
   {
     digitalWrite(RELAY_STATUS_LED, HIGH);

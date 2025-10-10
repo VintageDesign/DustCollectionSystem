@@ -43,8 +43,6 @@ void setup() {
   digitalWrite(STATUS_PIN, HIGH);
 }
 
-State current_state = State::OFF;
-
 int last_button_state = 0;
 int button_state = 0;
 uint32_t debounce_time = 0;
@@ -70,13 +68,7 @@ void loop() {
       // only toggle the LED if the new button state is HIGH
       if (button_state == HIGH) {
         state_change_request request;
-        request.new_state = current_state;
-
-        if (current_state == State::ON) {
-          current_state = State::OFF;
-        } else {
-          current_state = State::ON;
-        }
+        request.new_state = State::TOGGLE;
 
         esp_err_t result = esp_now_send(base_station_mac_address, (uint8_t *)&request, sizeof(request));
 

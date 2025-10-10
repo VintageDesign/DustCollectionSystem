@@ -7,7 +7,7 @@ enum class State: uint32_t
 {
   OFF = 0x00,
   ON = 0x01,
-
+  TOGGLE = 0x02, // Invert the current state.
 };
 
 typedef struct state_change_request
