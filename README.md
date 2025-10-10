@@ -26,3 +26,6 @@ I am not gonna go into specifics here as I built this from a bunch of scrap part
 ### Remote
 - ESP32 Dev Board
 - A button
+
+### Enclosures
+For this inital version the remote is a fully 3d printable enclosure located under `hardware/enclosures/`. The base station utilizes the existing switch box on the harbor freight dust collector. All of the files I used are located in `hardware/enclosures/` but YMMV.
